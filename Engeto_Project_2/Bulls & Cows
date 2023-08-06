@@ -1,0 +1,177 @@
+"""
+projekt_2.py: druhý projekt do Engeto Online Python Akademie
+author: Silvie Pelanova
+email: silvie.pelanova@gmail.com
+discord: silvie4181
+"""
+
+""" 
+Create RANDOM FOUR digit number (guessed number) with CONDITIONS that NO DIGITS are repeated (wrong 2234) 
+AND number do NOT START with 0 (wrong 0234).
+IF at least one condition is violated
+    REPEAT
+ELSE continue to welcome message
+
+Welcome user and write message: "Hi there! I'have generated a random 4 (count based on length of a number) digit number for you. 
+Let's play a bulls and cows game!"
+
+Request to enter input number from user.
+SET UP variable to count elapsed time
+SET UP variable to calculate number of guesses (number of loops)
+
+Validate input number based on CONDITIONS: 
+    IS NOT EMPTY, IS A NUMBER, IS 4 DIGIT, NOT START 0 AND NO DIGITS are repeated
+        FOR each digit in input number compare first position with next positions
+            IF AT LEAST one digit is repeated END the cycles -> do not continue to calculate bulls and cows
+            -> request new input number -> continue with validation until condition met
+AND trigger number of loops calculation AND time counter(only when loop counter is equal to 0)
+Set up variables to count number of bulls and cows
+    IF AT LEAST one condition is violated:
+        END VALIDATION cycle -> do not continue to calculate bulls and cows
+        -> request new input number -> continue with validation until conditions met
+    ELSE continue to compare input number with guessed number and count bulls and cows
+        IF input number is equal to guessed number (1234 = 1234)
+            END time counter
+            END calculation of guesses (number of loops)
+            WRITE congratulation message containing calculation with NUMBER OF GUESSES (calculated based on number of loops -> 1 guess/ 2guesses) 
+            AND ELAPSED TIME in format HH:MM:SS
+                IF number of guesses IS LESS than 5 OR EQUAL to 5 write "It's amazing"
+                ELSE number of guesses IS HIGHER than 5 AND LESS then 15 OR EQUAL to 15 write "It's average"
+                ELSE number of guesses IS HIGHER than 15 write "It's not so good"
+            END the game
+        ELSE compare digits in input number with digits in guessed number and display result
+            FOR digits where digit in input number is on the same position in guessed number COUNT bull/bulls 
+            (1234 : 1567 -> 1 bull on position[0] number 1)
+            FOR digits where digit in input number is appearing in guessed number AND is not on the same position COUNT cow/cows 
+            (1234 : 5638 -> 1 cow on position[2] number 3)
+            IF bulls or cows is equal to 1 write bull or cow
+            ELSE write bulls or cows
+        Once the result of a cycle is displyed (cows and bulls are calculated)
+        return to the begining where input number is requested
+        request new input number until input number is equal to guessed number
+        after each cycle count bulls and cows from 0
+"""
+ 
+
+
+
+import random
+import time
+from datetime import timedelta
+
+# function definition to count elapsed time
+def count_elapse_time(start_time, end_time):
+    return round(end_time - start_time)
+
+# function definition to convert elapsed time format
+def convert_elapsed_time(elapsed_time):
+    converted_elapsed_time = timedelta(seconds=elapsed_time)
+    return str(converted_elapsed_time).split(":")
+
+# creation of random 4 digit number not starting with 0 AND no repeating digits in a number
+while True:
+    
+    guess_number = ''.join(random.sample("0123456789", 4))
+    if guess_number[0] != "0":
+        break
+    else:   
+        continue
+
+    
+separator = "-" * 47
+
+# welcome message
+print(f"Hi there! \n{separator} \nI'have generated a random {len(guess_number)} digit number for you. \nLet's play a bulls and cows game!")
+print(separator)
+
+print("Enter a number:")
+print(separator)
+
+# variable to count number of cycles
+while_loop_counter = 0
+
+# evaluation of the input number format correctness through while loop
+while True:
+    # variable to run while cycle from begining
+    restart_while = False
+
+    # variables to count bulls a cows
+    bulls = 0
+    cows = 0
+ 
+    # request to enter input number
+    input_number = input(">>> ")
+    
+    # for each new cycle count plus one
+    while_loop_counter += 1
+
+    # starting time counter
+    if while_loop_counter == 1:
+        start_time = time.time()
+         
+    # number in numeric, is not empty, not starting with 0 and not shorter/longer then 4
+    if input_number.isdigit() and input_number != "" and input_number[0] != "0" and len(input_number) == len(guess_number):
+
+        # digit is not repeated in a number
+        for digit_i in range(0, len(input_number)):
+            for digit_j in range(digit_i+1, len(guess_number)):
+                if input_number[digit_i] == input_number[digit_j]:
+                    print("Incorrect input, please, enter a number with non-repeating digits.")
+                    restart_while = True # variable to restart while loop when repeating number is found (do not compute cows and bulls)
+                    break # break first for loop when first repeating number is found
+            if restart_while == True:
+                break # break second for loop when first repeating number is found
+        if restart_while == True:
+            continue # restart while loop, do not continue to counting cows and bulls
+    else:
+        print(f"Incorret input, please, enter {len(guess_number)} digit number not starting with 0!")
+        continue
+    
+    # the course of the game
+    while True:
+        
+        # same numbers (input nr. = guessed nr.)
+        if input_number == guess_number:
+            
+            # time counter end
+            end_time = time.time()       
+            elapsed_time = count_elapse_time(start_time, end_time)
+            formated_elapsed_time = convert_elapsed_time(elapsed_time)
+
+            # result print
+            if while_loop_counter == 1:
+                print(f"Correct, you've guessed the right number in {while_loop_counter} guess! \nThat's amazing!") 
+            elif while_loop_counter > 1 and while_loop_counter <= 5:
+                print(f"Correct, you've guessed the right number in {while_loop_counter} guesses! \nThat's amazing!")                  
+            elif while_loop_counter > 5 and while_loop_counter < 15:
+                print(f"Correct, you've guessed the right number in {while_loop_counter} guesses! \nThat's average.")
+            else:
+                print(f"Correct, you've guessed the right number in {while_loop_counter} guesses! \nThat's not so good.")
+                print(separator)
+                
+            print(f"You have guessed right number in {formated_elapsed_time[0]} h {formated_elapsed_time[1]} m {formated_elapsed_time[2]} s.")
+            print(separator)
+            quit()
+        
+        # different numbers (input nr. se nerovna guessed nr.)
+        else:   
+            for digit_i in range(0, len(input_number)):        
+                if input_number[digit_i] == guess_number[digit_i]:
+                    bulls += 1
+                                
+                for digit_j in range(0, len(guess_number)):            
+                    if input_number[digit_i] == guess_number[digit_j] and input_number[digit_i] != guess_number[digit_i]:
+                        cows += 1    
+        
+        # list bull/bulls and cow/cows based on numbers in variables cows/bulls
+            if cows == 1 and bulls == 1:
+                print(f"{cows} cow {bulls} bull")
+            elif cows == 1 and bulls != 1 :
+                print(f"{cows} cow {bulls} bulls")
+            elif cows != 1 and bulls == 1:
+                print(f"{cows} cows {bulls} bull" )
+            else:
+                print(f"{cows} cows {bulls} bulls")
+        
+        print(separator)
+        break
