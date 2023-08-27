@@ -1,3 +1,10 @@
+"""
+projekt_2.py: druhý projekt do Engeto Online Python Akademie
+author: Silvie Pelanova
+email: silvie.pelanova@gmail.com
+discord: silvie4181
+"""
+
 import random
 import time
 from datetime import timedelta
@@ -29,7 +36,6 @@ def create_guess_number():
 
 # number which is being guessed
 guess_number = create_guess_number()
-print(guess_number)
 
 separator = "-" * 47
 
