@@ -15,7 +15,7 @@ The program will generate an unknown random number in the format:
  Then the program prompts the player to insert a number. Once the number is entered the program launch the time counter, evaluate the format of the number and count the number of matching digits, bulls&cows. If wrong number format used, program returns message with invalid input and prompt player to enter new number. Once the correct number is entered, the program launches loop counter.
  If the matching digit is in the right position the program will count bull/bulls. If the matching digit is in a different position the program will count cow/cows. The bull/bulls are counted first. Then the program will prompt the player to insert new guess until the player guesses the number. When the game ends the program will return a message with number of guesses, status how well the player played the game based on the number of guesses and elapsed time in a format hh:mm:ss. The loops are counted only for a valid input until the end of the game. Time counter ends when the player guessed the secret number.
 
-_Example with secret number => 1369
+**_Example with secret number => 1369_**
 
 ![The course of the game, counting bulls and cows](https://github.com/SilviePelanova/sp-repo/blob/main/Engeto_Project_2/image-bulls%26cows.png)
 
