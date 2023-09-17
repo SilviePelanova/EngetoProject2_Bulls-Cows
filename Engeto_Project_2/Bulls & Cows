@@ -51,7 +51,6 @@ def validate_input_number(input_number):
 def play_game(start_counter_on=False):
     attempts = 0
     guess_number = generate_guess_number()
-    print(guess_number)
 
     # welcome message
     print(f"Hi there! \n{SEPARATOR} \nI'have generated a random {NUM_DIGITS} digit number for you. \nLet's play a bulls and cows game!")
