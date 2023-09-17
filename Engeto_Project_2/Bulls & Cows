@@ -5,6 +5,12 @@ email: silvie.pelanova@gmail.com
 discord: silvie4181
 """
 
+"""
+Bulls and Cows Game
+
+This script implements a Bulls and Cows game where the player tries to guess a random 4-digit number.
+"""
+
 import random
 import time
 from datetime import timedelta
@@ -13,10 +19,11 @@ from datetime import timedelta
 NUM_DIGITS = 4
 MAX_GUESSES_FOR_AMAZING = 5
 MAX_GUESSES_FOR_AVERAGE = 15
-SEPARATOR = "-" * 47
+SEPARATOR_LENGTH = 47
+SEPARATOR = "-" * SEPARATOR_LENGTH
 
-# define function creating random 4 digit number which does not strat with 0 and digits are not repeating
-def generate_guess_number():
+def generate_random_guess_number() -> str:
+    """Generate a random 4-digit number without leading 0 and without repeating digits."""
     available_numbers = list(range(10))
     random_numbers = []
     for number in range(NUM_DIGITS):
@@ -29,42 +36,44 @@ def generate_guess_number():
         random_numbers.append(digit)
     return "".join(map(str, random_numbers))
 
-# define function counting elapsed time
-def count_elapsed_time(end_time, start_time):
+def calculate_elapsed_time(end_time: float, start_time: float) -> str:
+    """Calculate elapsed time as a formatted string."""
     elapsed_time = round(end_time - start_time)
     converted_elapsed_time = timedelta(seconds=elapsed_time)
     return str(converted_elapsed_time).split(":")
 
-# define function validating input number
-def validate_input_number(input_number):
-    if not input_number.isdigit():                                                              # is number
+def validate_input_number(input_number: str) -> tuple[bool, str]:
+    """Validate if input_number is a valid 4-digit number without repeating digits."""
+    if not input_number.isdigit():                                                              
         return False, "Incorrect input, input must be a number"
-    if input_number[0] == "0":                                                                  # is not equal 0
+    if input_number[0] == "0":                                                                  
         return False, "Incorrect input, input must not start with 0"
-    if len(input_number) != NUM_DIGITS:                                                         # is 4 digit
+    if len(input_number) != NUM_DIGITS:                                                         
         return False, f"Incorrect input, input must be {NUM_DIGITS} digit number"
-    if len(input_number) != len(set(input_number)):                                             # digits does not repeats
+    if len(input_number) != len(set(input_number)):                                             
         return False, "Incorrect input, input must not have repeated digits"
     return True, ""
 
-# main loop game
-def play_game(start_counter_on=False):
-    attempts = 0
-    guess_number = generate_guess_number()
+def play_game():
+    """Start the Bulls and Cows game."""
+    guess_number = generate_random_guess_number()
 
     # welcome message
     print(f"Hi there! \n{SEPARATOR} \nI'have generated a random {NUM_DIGITS} digit number for you. \nLet's play a bulls and cows game!")
     print(SEPARATOR)
     print("Enter a number:")
     print(SEPARATOR)
+    
+    attempts = 0
+    start_counter_on = False
 
     while True:
         # request to enter input number
         input_number = input(">>> ")
         
         # validate input number, if valid count number of attempts plus 1
-        valid, message = validate_input_number(input_number)
-        if not valid:
+        is_valid_input_number, message = validate_input_number(input_number)
+        if not is_valid_input_number:
             print(message)
             continue
          
@@ -89,7 +98,7 @@ def play_game(start_counter_on=False):
                     
             # stop time counter
             end_time = time.time()       
-            formated_elapsed_time = count_elapsed_time(end_time,start_time)
+            formated_elapsed_time = calculate_elapsed_time(end_time,start_time)
 
             # result print
             if attempts <= MAX_GUESSES_FOR_AMAZING:
@@ -109,4 +118,4 @@ def play_game(start_counter_on=False):
         print(SEPARATOR)
 
 if __name__ == "__main__":
-    play_game()   
+    play_game()  
