@@ -9,119 +9,105 @@ import random
 import time
 from datetime import timedelta
 
-# Definition to count elapsed time
+# constants
+NUM_DIGITS = 4
+MAX_GUESSES_FOR_AMAZING = 5
+MAX_GUESSES_FOR_AVERAGE = 15
+SEPARATOR = "-" * 47
+
+# define function creating random 4 digit number which does not strat with 0 and digits are not repeating
+def generate_guess_number():
+    available_numbers = list(range(10))
+    random_numbers = []
+    for number in range(NUM_DIGITS):
+        if number == 0:
+            digit = random.choice([x for x in available_numbers if x != 0])
+            available_numbers.remove(digit)
+        else: 
+            digit = random.choice(available_numbers)
+            available_numbers.remove(digit)
+        random_numbers.append(digit)
+    return "".join(map(str, random_numbers))
+
+# define function counting elapsed time
 def count_elapsed_time(end_time, start_time):
     elapsed_time = round(end_time - start_time)
     converted_elapsed_time = timedelta(seconds=elapsed_time)
     return str(converted_elapsed_time).split(":")
 
-# variable to set up numbers possible to use for random number
-list_numbers = list(range(0,10))
+# define function validating input number
+def validate_input_number(input_number):
+    if not input_number.isdigit():                                                              # is number
+        return False, "Incorrect input, input must be a number"
+    if input_number[0] == "0":                                                                  # is not equal 0
+        return False, "Incorrect input, input must not start with 0"
+    if len(input_number) != NUM_DIGITS:                                                         # is 4 digit
+        return False, f"Incorrect input, input must be {NUM_DIGITS} digit number"
+    if len(input_number) != len(set(input_number)):                                             # digits does not repeats
+        return False, "Incorrect input, input must not have repeated digits"
+    return True, ""
 
-# definition of function creating random 4 digit number which does not strat with 0 and digits are not repeating
-def create_guess_number():
-    random_numbers = []
-    first_number = random.choice(list_numbers[1:])
-    random_numbers.append(first_number)
-    list_numbers.remove(first_number)
-    second_number = random.choice(list_numbers)
-    random_numbers.append(second_number)
-    list_numbers.remove(second_number)
-    third_number = random.choice(list_numbers)
-    random_numbers.append(third_number)
-    list_numbers.remove(third_number)
-    forth_number = random.choice(list_numbers)
-    random_numbers.append(forth_number)
-    return "".join(map(str, random_numbers))
+# main loop game
+def play_game(start_counter_on=False):
+    attempts = 0
+    guess_number = generate_guess_number()
+    print(guess_number)
 
-# number which is being guessed
-guess_number = create_guess_number()
+    # welcome message
+    print(f"Hi there! \n{SEPARATOR} \nI'have generated a random {NUM_DIGITS} digit number for you. \nLet's play a bulls and cows game!")
+    print(SEPARATOR)
+    print("Enter a number:")
+    print(SEPARATOR)
 
-separator = "-" * 47
-
-# welcome message
-print(f"Hi there! \n{separator} \nI'have generated a random {len(guess_number)} digit number for you. \nLet's play a bulls and cows game!")
-print(separator)
-
-print("Enter a number:")
-print(separator)
-
-# variable to count number of cycles
-while_loop_counter = 0
-start_counter_on = False
-
-# number validation through while loop
-while True:
-    # variables to count bulls a cows
-    bulls = 0
-    cows = 0
- 
-    # request to enter input number
-    input_number = input(">>> ")
-
-    # start time counter
-    if start_counter_on == False: 
-        start_time = time.time()
+    while True:
+        # request to enter input number
+        input_number = input(">>> ")
+        
+        # validate input number, if valid count number of attempts plus 1
+        valid, message = validate_input_number(input_number)
+        if not valid:
+            print(message)
+            continue
          
-    # number in numeric, is not empty, not starting with 0 and not shorter/longer then 4
-    if input_number.isdigit() == False:
-        print(f"Incorret input, please, enter {len(guess_number)} digit number!")
-    elif input_number[0] == "0":
-        print(f"Incorret input, please, enter {len(guess_number)} digit number not starting with 0!")
-    elif len(input_number) != len(guess_number):
-        print(f"Incorret input, please, enter {len(guess_number)} digit number!")
-    elif len(input_number) != len(set(input_number)):
-        print("Incorrect input, please, enter a number with non-repeating digits.")
-    # same numbers => count plus 1 in while loop counter
-    elif input_number == guess_number:
+        attempts += 1   
         
-        if start_counter_on == False: 
+        # start time counter on for first valid input only
+        if start_counter_on == False:
+            start_time = time.time()
             start_counter_on = True
 
-        while_loop_counter += 1    
-                
-        # stop time counter
-        end_time = time.time()       
-        formated_elapsed_time = count_elapsed_time(end_time,start_time)
-
-        # result print
-        if while_loop_counter == 1:
-            print(f"Correct, you've guessed the right number in {while_loop_counter} guess! \nThat's amazing!") 
-        elif while_loop_counter > 1 and while_loop_counter <= 5:
-            print(f"Correct, you've guessed the right number in {while_loop_counter} guesses! \nThat's amazing!")                  
-        elif while_loop_counter > 5 and while_loop_counter < 15:
-            print(f"Correct, you've guessed the right number in {while_loop_counter} guesses! \nThat's average.")
-        else:
-            print(f"Correct, you've guessed the right number in {while_loop_counter} guesses! \nThat's not so good.")
-            print(separator)
-            
-        print(f"You have guessed the right number in {formated_elapsed_time[0]} h {formated_elapsed_time[1]} m {formated_elapsed_time[2]} s.")
-        print(separator)
-        quit()
-    
-    # different numbers (input nr. is not equal guessed nr.) => count plus 1 in while loop counter
-    else:
-        if start_counter_on == False: 
-            start_counter_on = True
-
-        while_loop_counter += 1  
-        
-        for digit_i in range(0, len(input_number)):        
-            if input_number[digit_i] == guess_number[digit_i]:
+        # count bulls/cows   
+        bulls, cows = 0, 0
+        for i in range(NUM_DIGITS):        
+            if input_number[i] == guess_number[i]:
                 bulls += 1
-                            
-            for digit_j in range(0, len(guess_number)):            
-                if input_number[digit_i] == guess_number[digit_j] and input_number[digit_i] != guess_number[digit_i]:
-                    cows += 1         
+            elif input_number[i] in guess_number:
+                cows += 1
+        
+        # input number = guess number count as valid attempt
+        if bulls == NUM_DIGITS:
+            attempts += 1    
+                    
+            # stop time counter
+            end_time = time.time()       
+            formated_elapsed_time = count_elapsed_time(end_time,start_time)
+
+            # result print
+            if attempts <= MAX_GUESSES_FOR_AMAZING:
+                print(f"Correct, you've guessed the right number in {attempts} guess! {'es' if attempts != 1 else ''} \nThat's amazing!")
+            elif attempts > MAX_GUESSES_FOR_AMAZING and attempts < MAX_GUESSES_FOR_AVERAGE:
+                print(f"Correct, you've guessed the right number in {attempts} guesses! \nThat's average.")
+            else:
+                print(f"Correct, you've guessed the right number in {attempts} guesses! \nThat's not so good.")
+            
+            print(SEPARATOR)
+            print(f"You have guessed the right number in {formated_elapsed_time[0]} h {formated_elapsed_time[1]} m {formated_elapsed_time[2]} s.")
+            print(SEPARATOR)
+            quit()
 
         # list bull/bulls and cow/cows based on numbers in variables cows/bulls
-        if cows == 1 and bulls == 1:
-            print(f"{cows} cow {bulls} bull")
-        elif cows == 1 and bulls != 1 :
-            print(f"{cows} cow {bulls} bulls")
-        elif cows != 1 and bulls == 1:
-            print(f"{cows} cows {bulls} bull" )
-        else:
-            print(f"{cows} cows {bulls} bulls")
+        print(f"{bulls} bull{'s' if bulls != 1 else ''} {cows} cow{'s' if cows != 1 else ''}")
+        print(SEPARATOR)
 
-    print(separator)
+if __name__ == "__main__":
+    play_game()   
